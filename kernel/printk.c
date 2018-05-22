@@ -43,6 +43,10 @@
 #include <linux/rculist.h>
 #include <linux/poll.h>
 
+#ifdef CONFIG_LLCON
+#include <video/llcon.h>
+#endif
+
 #include <asm/uaccess.h>
 
 #include <mach/msm_rtb.h>
@@ -419,6 +423,13 @@ static ssize_t devkmsg_writev(struct kiocb *iocb, const struct iovec *iv,
 		}
 	}
 	line[len] = '\0';
+
+#ifdef CONFIG_LLCON
+	for (i = 0; i <= len; i++) {
+		llcon_emit_log_char(line[i]);
+	}
+#endif
+	
 
 	printk_emit(facility, level, NULL, 0, "%s", line);
 out:
